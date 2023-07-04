@@ -1,0 +1,152 @@
+﻿@model IEnumerable<WebApplication4.Models.DemoTable>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+@Html.Raw(TempData["DeleteMessage"])
+
+@{ 
+    <table>
+        <tr>
+            <th>ID</th>
+            <th> Textbox1</th>
+            <th> Textbox2 </th>
+        </tr>
+
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Textbox1</td>
+                    <td>@item.Textbox2</td>
+
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    </td>
+
+                </tr>
+
+            }
+        }
+    </table>
+ 
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+    <script>
+
+        //Code for searching (referenced )
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable1 tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+   
+
+    
+        $(document).ready(function () {
+            $(document).on('click', '.editBtn', function () {
+                var row = $(this).closest('tr');
+                enableEditing(row);          // Enable editing for the row
+            });
+
+
+            // Save button click event handler
+            $(document).on('click', '.saveBtn', function () {
+                var row = $(this).closest('tr');
+                saveChanges(row);           // Save changes and disable editing for the row
+            });
+
+            // Cancel button click event handler
+            $(document).on('click', '.cancelBtn', function () {
+                var row = $(this).closest('tr');
+                cancelEditing(row);         // Cancel editing and disable editing for the row
+            });
+
+            // Function to enable editing for a row
+            function enableEditing(row) {
+                var Textbox1 = row.find('td:eq(0)').text();
+                var Textbox2 = row.find('td:eq(1)').text();
+
+                // Replace the cells with input fields
+                row.find('td:eq(0)').html('<input type="text" class="editTextbox1" value="' + Textbox1 + '">');
+                row.find('td:eq(1)').html('<input type="text" class="editTextbox2" value="' + Textbox2 + '">');
+
+                // Replace the "Edit" button with "Save" and "Cancel" buttons
+                row.find('td:eq(2)').html('<button class="saveBtn">Save</button> <button class="cancelBtn">Cancel</button>');
+            }
+
+            // Function to save changes and disable editing for a row
+            function saveChanges(row)
+            {
+                var Textbox1 = row.find('.editTextbox1').val();
+                var Textbox2 = row.find('.editTextbox2').val();
+
+                // Update the row with the new values
+                row.find('td:eq(0)').text(Textbox1);
+                row.find('td:eq(1)').text(Textbox2);
+
+                // Replace the "Save" and "Cancel" buttons with the "Edit" button
+                row.find('td:eq(2)').html('<button class="editBtn">Edit</button>');
+            }
+
+            // Function to cancel editing and disable editing for a row
+            function cancelEditing(row) {
+                var Textbox1 = row.find('.editTextbox1').attr('value');
+
+                var Textbox2 = row.find('.editTextbox2').attr('value');
+                // Restore the original values in the row
+                row.find('td:eq(0)').text(Textbox1);
+                row.find('td:eq(1)').text(Textbox2);
+
+                // Replace the "Save" and "Cancel" buttons with the "Edit" button
+                row.find('td:eq(2)').html('<button class="editBtn">Edit</button>');
+            }
+
+        });
+    </script>
+</head>
+<body>
+    <input id="myInput" type="text" placeholder="Search..">
+    <br><br>
+    <table id="myTable">
+        <thead>
+            <tr>
+
+                <th> Textbox1</th>
+                <th> Textbox2 </th>
+            </tr>
+        </thead>
+        <tbody id="myTable1">
+            @{
+                foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>@item.Textbox1</td>
+                        <td>@item.Textbox2</td>
+                        <td><button class="editBtn">Edit</button></td>
+                    </tr>
+                }
+            }
+
+    </table>
+</body>
+</html>
+
+
